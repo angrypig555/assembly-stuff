@@ -58,6 +58,8 @@ _start:
     mov edx, favnum_len
     int 0x80
 
+
+
     mov eax, 39
     mov ebx, dirname
     mov ecx, mode

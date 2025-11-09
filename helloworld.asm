@@ -4,6 +4,7 @@ global _start
 section .bss
     buffer resb 2        ; 1 char + newline
     favnumbuffer resb 3
+    answer resb 2
 
 section .text:
 
@@ -57,6 +58,50 @@ _start:
     mov edx, favnum_len
     int 0x80
 
+    mov eax, 39
+    mov ebx, dirname
+    mov ecx, mode
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, message3
+    mov edx, message3_length
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt3
+    mov edx, prompt3_len
+    int 0x80
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, answer
+    mov edx, 2
+    int 0x80
+
+    mov al, [answer]
+    cmp al, 'y'
+    je yes
+    cmp al, 'Y'
+    je yes
+
+    mov eax, 0x1
+    mov ebx, 0
+    int 0x80
+
+yes:
+    mov eax, 40
+    mov ebx, dirname
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, deleteyn
+    mov edx, deleteyn_length
+    int 0x80
+
     mov eax, 0x1
     mov ebx, 0
     int 0x80
@@ -72,3 +117,12 @@ section .data:
     prompt2_len equ $ - prompt2
     favnum db " is your favourite number.", 0xA
     favnum_len equ $ - favnum
+    message3: db "i will now create a directory /tmp/helloworldtestdir", 0xA
+    message3_length equ $ - message3
+    prompt3 db "Delete? (y/n): ", 0xA
+    prompt3_len equ $ - prompt3
+    deleteyn db "Deleting directory and exiting", 0xA
+    deleteyn_length equ $ - deleteyn
+
+    dirname db "/tmp/helloworldtestdir", 0
+    mode equ 0o755
